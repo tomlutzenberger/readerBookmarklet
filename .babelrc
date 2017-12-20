@@ -1,0 +1,3 @@
+{
+  "plugins": ["minify-mangle-names", "minify-simplify", "minify-type-constructors"]
+}

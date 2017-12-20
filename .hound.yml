@@ -1,0 +1,5 @@
+jshint:
+  enabled: true
+
+eslint:
+  enabled: true

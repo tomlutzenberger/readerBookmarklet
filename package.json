@@ -1,0 +1,33 @@
+{
+  "name": "reader-bookmarklet",
+  "version": "0.1.0",
+  "description": "Dynamic Bookmarklet to read text from a website",
+  "main": "src/readerBookmarklet.js",
+  "scripts": {
+    "minify:compile": "babili src/readerBookmarklet.js --out-file src/readerBookmarklet.min.js",
+    "minify:wrap": "cat src/readerBookmarklet.min.js | wrap 'javascript:!(()=>{' '})();' > tmpfile && cat tmpfile > src/readerBookmarklet.min.js && rm tmpfile",
+    "minify": "yarn run minify:compile && yarn run minify:wrap",
+    "compile": "yarn run minify",
+    "lint": "eslint --config .eslintrc.json src/",
+    "build": "yarn run compile && yarn run lint && yarn autoclean"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tomlutzenberger/readerBookmarklet.git"
+  },
+  "author": "Tom Lutzenberger",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/tomlutzenberger/readerBookmarklet/issues"
+  },
+  "homepage": "https://tomlutzenberger.github.io/readerBookmarklet/",
+  "devDependencies": {
+    "babel-plugin-minify-mangle-names": "^0.2.0",
+    "babel-plugin-minify-simplify": "^0.2.0",
+    "babel-plugin-minify-type-constructors": "^0.2.0",
+    "babili": "^0.1.4",
+    "cmd-wrap": "^1.0.4",
+    "eslint": "^4.10.x",
+    "eslint-config-standard": "^10.2.x"
+  }
+}
