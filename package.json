@@ -1,6 +1,6 @@
 {
   "name": "reader-bookmarklet",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Dynamic Bookmarklet to read text from a website",
   "main": "src/readerBookmarklet.js",
   "scripts": {

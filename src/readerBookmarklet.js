@@ -1,5 +1,5 @@
 /*!
- * readerBookmarklet v0.1.0
+ * readerBookmarklet v0.2.0
  * Dynamic Bookmarklet to read text from a website
  *
  * Copyright (c) 2017-2019 - Tom Lutzenberger (lutzenbergerthomas at gmail dot com)
