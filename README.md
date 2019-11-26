@@ -10,7 +10,7 @@
 
 ## What it is
 
-readerBookmarklet is a dynamic bookmark written in pure JavaScript to a website's text through speech-synthesizing.
+readerBookmarklet is a dynamic bookmark written in pure JavaScript to read a website's text through speech-synthesizing.
 
 ## How to use
 
@@ -28,5 +28,5 @@ If you find a case where the script could be improved or a bug needs to be fixed
 This script is published under the **MIT License** and can be used for any commercial and personal projects.
 
 ## Changelog
-
+  
 - 2017-12-20 [**v0.1**](https://github.com/tomlutzenberger/readerBookmarklet/releases/tag/v0.1) Working version
