@@ -2,7 +2,7 @@
  * readerBookmarklet v0.1.0
  * Dynamic Bookmarklet to read text from a website
  *
- * Copyright (c) 2017 - Tom Lutzenberger (lutzenbergerthomas at gmail dot com)
+ * Copyright (c) 2017-2019 - Tom Lutzenberger (lutzenbergerthomas at gmail dot com)
  * https://github.com/tomlutzenberger/readerBookmarklet
  * https://tomlutzenberger.github.io/readerBookmarklet/
  *
@@ -10,8 +10,7 @@
  * https://github.com/tomlutzenberger/readerBookmarklet/blob/master/LICENSE
  */
 
-/*globals document*/
-/*jslint esnext:true */
+/* jslint esnext:true */
 
 
 const FIRST_ELEMENT = 0;
@@ -29,24 +28,29 @@ const ONE = 1;
  * @return {HTMLElement}
  */
 const createDomElement = (tagName, properties, attributes) => {
-
     'use strict';
 
-    if (typeof tagName !== 'string' && tagName.length < ONE) return null;
+    if (typeof tagName !== 'string' && tagName.length < ONE) {
+        return null;
+    }
 
     const domElement = document.createElement(tagName);
 
-    if (properties !== undefined) {
-        for (let prop in properties) {
-            if (!properties.hasOwnProperty(prop)) continue;
+    if (properties !== undefined && Object.keys(properties).length > 0 && properties.constructor === Object) {
+        for (const prop in properties) {
+            if (!Object.prototype.hasOwnProperty.call(properties, prop)) {
+                continue;
+            }
 
             domElement[prop] = properties[prop];
         }
     }
 
-    if (attributes !== undefined) {
-        for (let attr in attributes) {
-            if (!attributes.hasOwnProperty(attr)) continue;
+    if (attributes !== undefined && Object.keys(attributes).length > 0 && attributes.constructor === Object) {
+        for (const attr in attributes) {
+            if (!Object.prototype.hasOwnProperty.call(attributes, attr)) {
+                continue;
+            }
 
             domElement.setAttribute(attr, attributes[attr]);
         }
@@ -63,20 +67,23 @@ const createDomElement = (tagName, properties, attributes) => {
  * @param {Array} elements -
  */
 const appendChildsToDomElement = (parent, elements) => {
-
-    if (!HTMLElement.prototype.isPrototypeOf(parent)) return;
-    if (!Array.isArray(elements) || elements.length < ONE) return;
+    if (!(parent instanceof HTMLElement)) {
+        return;
+    }
+    if (!Array.isArray(elements) || elements.length < ONE) {
+        return;
+    }
 
     elements.forEach((element) => {
-        if (!HTMLElement.prototype.isPrototypeOf(element)) return;
+        if (!(element instanceof HTMLElement)) {
+            return;
+        }
         parent.appendChild(element);
     });
 };
 
 
-
 const readerBookmarklet = () => {
-
     'use strict';
 
     const synth = window.speechSynthesis;
@@ -88,23 +95,23 @@ const readerBookmarklet = () => {
     /** @type {HTMLElement} readerStyles */
     let readerStyles = null;
 
-    /** @type {HTMLElement} selectLang */
+    /** @type {HTMLElement|HTMLSelectElement} selectLang */
     let selectLang = null;
 
-    /** @type {HTMLElement} selectLang */
+    /** @type {HTMLElement|HTMLSelectElement} selectLang */
     let selectVoice = null;
 
-    /** @type {HTMLElement} btnSearch */
+    /** @type {HTMLElement|HTMLButtonElement} btnSearch */
     let btnSearch = null;
 
-    /** @type {HTMLElement} btnPlayPause */
+    /** @type {HTMLElement|HTMLButtonElement} btnPlayPause */
     let btnPlayPause = null;
 
-    /** @type {HTMLElement} btnStop */
+    /** @type {HTMLElement|HTMLButtonElement} btnStop */
     let btnStop = null;
 
     /** @type {Object} voices */
-    let voices = {};
+    const voices = {};
 
     /** @type {String} docLang */
     let docLang = null;
@@ -112,12 +119,11 @@ const readerBookmarklet = () => {
 
     /**
      * @method collectVoices
-     * @description Pushes all available SpeechSyntheziser Voices into an array index by languge code
+     * @description Pushes all available SpeechSynthesizer Voices into an array index by language code
      *
      * @returns {void}
      */
     const collectVoices = () => {
-
         synth.getVoices().forEach((voice) => {
             const lang = voice.lang.split('-')[FIRST_ELEMENT];
 
@@ -128,7 +134,6 @@ const readerBookmarklet = () => {
             voices[lang].push(voice);
         });
     };
-
 
 
     /**
@@ -144,7 +149,7 @@ const readerBookmarklet = () => {
         readerStyles.setAttribute('type', 'text/css');
         */
 
-        let textContent = `
+        const textContent = `
             body.reader-bookmarklet-searching *:not([id^=reader-bookmarklet]):hover {
                 border: 1px dotted #f00;
             }
@@ -168,14 +173,13 @@ const readerBookmarklet = () => {
             }
         `;
 
-        readerStyles = createDomElement('style', {textContent: textContent}, {
+        readerStyles = createDomElement('style', { textContent: textContent }, {
             id: 'reader-bookmarklet-style',
             type: 'text/css',
         });
 
         document.querySelector('head').appendChild(readerStyles);
     };
-
 
 
     /**
@@ -185,32 +189,30 @@ const readerBookmarklet = () => {
      * @returns {void}
      */
     const createUi = () => {
-
-        readerUi = createDomElement('div', {}, {id: 'reader-bookmarklet'});
-        selectLang = createDomElement('select', {}, {id: 'reader-bookmarklet-lang'});
-        selectLang.appendChild(createDomElement('option', {textContent: '---'}, {}));
-        selectVoice = createDomElement('select', {}, {id: 'reader-bookmarklet-voice'});
-        selectVoice.appendChild(createDomElement('option', {textContent: '---'}, {}));
-        btnSearch = createDomElement('button', {innerHTML: '&#128270;'}, {id: 'reader-bookmarklet-search'});
-        btnPlayPause = createDomElement('button', {textContent: '\u23ef'}, {id: 'reader-bookmarklet-play-pause'});
-        btnStop = createDomElement('button', {textContent: '\u23f9'}, {id: 'reader-bookmarklet-stop'});
+        readerUi = createDomElement('div', {}, { id: 'reader-bookmarklet' });
+        selectLang = createDomElement('select', {}, { id: 'reader-bookmarklet-lang' });
+        selectLang.appendChild(createDomElement('option', { textContent: '---' }, {}));
+        selectVoice = createDomElement('select', {}, { id: 'reader-bookmarklet-voice' });
+        selectVoice.appendChild(createDomElement('option', { textContent: '---' }, {}));
+        btnSearch = createDomElement('button', { innerHTML: '&#128270;' }, { id: 'reader-bookmarklet-search' });
+        btnPlayPause = createDomElement('button', { textContent: '\u23ef' }, { id: 'reader-bookmarklet-play-pause' });
+        btnStop = createDomElement('button', { textContent: '\u23f9' }, { id: 'reader-bookmarklet-stop' });
 
         appendChildsToDomElement(readerUi, [
-            createDomElement('h1', {textContent: 'Reader Bookmarklet'}, {id: 'reader-bookmarklet-title'}),
-            createDomElement('label', {textContent: 'Language'}, {for: 'reader-bookmarklet-lang'}),
+            createDomElement('h1', { textContent: 'Reader Bookmarklet' }, { id: 'reader-bookmarklet-title' }),
+            createDomElement('label', { textContent: 'Language' }, { for: 'reader-bookmarklet-lang' }),
             selectLang,
-            createDomElement('br'),
-            createDomElement('label', {textContent: 'Voice'}, {for: 'reader-bookmarklet-voice'}),
+            createDomElement('br', {}, {}),
+            createDomElement('label', { textContent: 'Voice' }, { for: 'reader-bookmarklet-voice' }),
             selectVoice,
-            createDomElement('br'),
+            createDomElement('br', {}, {}),
             btnSearch,
             btnPlayPause,
-            btnStop
+            btnStop,
         ]);
 
         document.querySelector('body').appendChild(readerUi);
     };
-
 
 
     /**
@@ -220,10 +222,8 @@ const readerBookmarklet = () => {
      * @returns {Boolean}
      */
     const getUiExists = () => {
-
         return document.getElementById('reader-bookmarklet-style') !== null && document.getElementById('reader-bookmarklet') !== null;
     };
-
 
 
     /**
@@ -233,13 +233,14 @@ const readerBookmarklet = () => {
      * @returns {void}
      */
     const populateVoiceData = () => {
-
         selectLang.innerHTML = '';
 
-        for (var lang in voices) {
-            if (!voices.hasOwnProperty(lang)) continue;
+        for (const lang in voices) {
+            if (!Object.prototype.hasOwnProperty.call(voices, lang)) {
+                continue;
+            }
 
-            const langOption = createDomElement('option', {textContent: lang}, {value: lang});
+            const langOption = createDomElement('option', { textContent: lang }, { value: lang });
 
             if (lang === docLang) {
                 langOption.setAttribute('selected', 'selected');
@@ -251,7 +252,6 @@ const readerBookmarklet = () => {
     };
 
 
-
     /**
      * @method populateLangVoices
      * @description Execute script
@@ -260,13 +260,12 @@ const readerBookmarklet = () => {
      * @returns {void}
      */
     const populateLangVoices = (language) => {
-
         selectVoice.innerHTML = '';
 
-        if (voices.hasOwnProperty(language)) {
-            for(let index = 0; index < voices[language].length; index++) {
+        if (Object.prototype.hasOwnProperty.call(voices, language)) {
+            for (let index = 0; index < voices[language].length; index++) {
                 const voice = voices[language][index];
-                const voiceOption = createDomElement('option', {textContent: voice.name}, {value: index});
+                const voiceOption = createDomElement('option', { textContent: voice.name }, { value: index });
 
                 if (index === FIRST_ELEMENT) {
                     voiceOption.setAttribute('selected', 'selected');
@@ -285,17 +284,17 @@ const readerBookmarklet = () => {
      * @returns {void}
      */
     const updateLangVoices = (event) => {
-
-        for (var optionIndex in selectLang.options) {
-            if (selectLang.options.hasOwnProperty(optionIndex)) {
+        /** @type {HTMLSelectElement} */
+        const target = event.target;
+        for (const optionIndex in selectLang.options) {
+            if (Object.prototype.hasOwnProperty.call(selectLang.options, optionIndex)) {
                 selectLang.options[optionIndex].removeAttribute('selected');
             }
         }
-        selectLang.options[event.target.selectedIndex].setAttribute('selected', 'selected');
+        selectLang.options[target.selectedIndex].setAttribute('selected', 'selected');
 
-        populateLangVoices(event.target.value);
+        populateLangVoices(target.value);
     };
-
 
 
     /**
@@ -305,15 +304,13 @@ const readerBookmarklet = () => {
      * @returns {void}
      */
     const updateReader = () => {
-
-        let voiceIndex = selectVoice.options[selectVoice.selectedIndex].value;
-        let lang = selectLang.options[selectLang.selectedIndex].value;
+        const voiceIndex = selectVoice.options[selectVoice.selectedIndex].value;
+        const lang = selectLang.options[selectLang.selectedIndex].value;
         console.log(voiceIndex);
         console.log(lang);
         reader.voice = voices[lang][voiceIndex];
         reader.lang = lang;
     };
-
 
 
     /**
@@ -322,8 +319,7 @@ const readerBookmarklet = () => {
      *
      * @returns {void}
      */
-    const inititalize = () => {
-
+    const initialize = () => {
         if (docLang === null) {
             docLang = document.getElementsByTagName('html')[FIRST_ELEMENT].getAttribute('lang');
             docLang = docLang === null ? 'en' : docLang.split('-')[FIRST_ELEMENT];
@@ -332,10 +328,10 @@ const readerBookmarklet = () => {
         setStyles();
         createUi();
 
-        btnSearch.addEventListener('click', (btnEvent) => {
+        btnSearch.addEventListener('click', () => {
             document.querySelector('body').classList.add('reader-bookmarklet-searching');
 
-            let bodyElements = document.querySelectorAll('body.reader-bookmarklet-searching *:not([id^=reader-bookmarklet])');
+            const bodyElements = document.querySelectorAll('body.reader-bookmarklet-searching *:not([id^=reader-bookmarklet])');
             bodyElements.forEach((element) => {
                 element.addEventListener('click', (event) => {
                     event.stopPropagation();
@@ -345,13 +341,14 @@ const readerBookmarklet = () => {
 
                     document.querySelector('body').classList.remove('reader-bookmarklet-searching');
                     bodyElements.forEach((element) => {
-                        element.removeEventListener('click', () => {});
+                        element.removeEventListener('click', () => {
+                        });
                     });
                 }, { capture: false, once: true });
             });
         });
 
-        btnPlayPause.addEventListener('click', (event) => {
+        btnPlayPause.addEventListener('click', () => {
             if (synth.speaking) {
                 synth.pause();
             } else if (synth.paused) {
@@ -363,7 +360,7 @@ const readerBookmarklet = () => {
             }
         });
 
-        btnStop.addEventListener('click', (event) => {
+        btnStop.addEventListener('click', () => {
             synth.cancel();
         });
 
@@ -372,9 +369,8 @@ const readerBookmarklet = () => {
             populateVoiceData();
             selectLang.onchange = updateLangVoices;
             selectVoice.onchange = (event) => {
-
-                for (var optionIndex in selectVoice.options) {
-                    if (selectVoice.options.hasOwnProperty(optionIndex)) {
+                for (const optionIndex in selectVoice.options) {
+                    if (Object.prototype.hasOwnProperty.call(selectVoice.options, optionIndex)) {
                         selectVoice.options[optionIndex].removeAttribute('selected');
                     }
                 }
@@ -392,15 +388,14 @@ const readerBookmarklet = () => {
      */
     const execute = () => {
         if (!getUiExists()) {
-            inititalize();
+            initialize();
         } else {
             populateVoiceData();
         }
-
     };
 
 
-    return {execute};
+    return { execute };
 };
 
 
