@@ -4,12 +4,12 @@
   "description": "Dynamic Bookmarklet to read text from a website",
   "main": "src/readerBookmarklet.js",
   "scripts": {
-    "minify:compile": "babili src/readerBookmarklet.js --out-file src/readerBookmarklet.min.js",
-    "minify:wrap": "cat src/readerBookmarklet.min.js | wrap 'javascript:!(()=>{' '})();' > tmpfile && cat tmpfile > src/readerBookmarklet.min.js && rm tmpfile",
+    "minify:compile": "babel-minify --comments false src/readerBookmarklet.js --out-file src/readerBookmarklet.min.js",
+    "minify:wrap": "cat src/readerBookmarklet.min.js | wrap \"javascript:!(()=>{\" \"})();\" > tmpfile && cat tmpfile > src/readerBookmarklet.min.js && rm tmpfile",
     "minify": "yarn run minify:compile && yarn run minify:wrap",
     "compile": "yarn run minify",
-    "lint": "eslint --config .eslintrc.json src/",
-    "build": "yarn run compile && yarn run lint && yarn autoclean"
+    "lint": "eslint --config .eslintrc src/readerBookmarklet.js",
+    "build": "yarn run compile && yarn run lint"
   },
   "repository": {
     "type": "git",
@@ -22,12 +22,14 @@
   },
   "homepage": "https://tomlutzenberger.github.io/readerBookmarklet/",
   "devDependencies": {
-    "babel-plugin-minify-mangle-names": "^0.2.0",
-    "babel-plugin-minify-simplify": "^0.2.0",
-    "babel-plugin-minify-type-constructors": "^0.2.0",
-    "babili": "^0.1.4",
+    "babel-minify": "^0.5.1",
+    "babel-preset-minify": "^0.5.1",
     "cmd-wrap": "^1.0.4",
-    "eslint": "^4.10.x",
-    "eslint-config-standard": "^10.2.x"
+    "eslint": "^6.7.1",
+    "eslint-config-standard": "^14.1.0",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-node": "^10.0.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1"
   }
 }
